@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Modifica annuncio{% endblock %}
+
+{%block content%}
+
+<main class="row m-1">
+    <section class="col-lg-6">
+        <form action="{{ url_for('modifica_info_annuncio', id=ann.id) }}" method="POST" class="card p-2">
+            <h4 class="card-title">Modifica qui le informazioni del tuo annuncio</h4>
+            <div class="card-body">
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="inputTitolo" class="form-label">Titolo</label>
+                        <input type="text" class="form-control inp" id="inputTitolo" name="titolo" value='{{ann.titolo |e}}' required minlength=3 maxlength=50>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <p>Indirizzo</p>
+                        <p class="border rounded p-1 d-flex align-self-start">{{ann.indirizzo |e}}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="inputTipo" class="form-label">Tipo di alloggio:</label>
+                        <select id="inputTipo" class="form-select" name="tipo" required>
+                            <option value="casa indipendente" {%if ann.tipo == 'casa indipendente'%}selected{%endif%}>Casa indipendente</option>
+                            <option value="appartamento" {%if ann.tipo == 'appartamento'%}selected{%endif%}>Appartamento</option>
+                            <option value="loft" {%if ann.tipo == 'loft'%}selected{%endif%}>Loft</option>
+                            <option value="villa" {%if ann.tipo == 'villa'%}selected{%endif%}>Villa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputNumLocali" class="form-label">Numero di locali:</label>
+                        <select id="inputNumLocali" class="form-select" name="num_locali" required>
+                            <option value="1" {%if ann.num_locali == 1%}selected{%endif%}>Uno</option>
+                            <option value="2" {%if ann.num_locali == 2%}selected{%endif%}>Due</option>
+                            <option value="3" {%if ann.num_locali == 3%}selected{%endif%}>Tre</option>
+                            <option value="4" {%if ann.num_locali == 4%}selected{%endif%}>Quattro</option>
+                            <option value="5" {%if ann.num_locali == 5%}selected{%endif%}>Cinque o più</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputArredata" class="form-label">E' arredata?</label>
+                        <select id="inputArredata" class="form-select" name="arredata" required>
+                            <option value="SI" {%if ann.arredata == 'SI'%}selected{%endif%}>Si</option>
+                            <option value="NO" {%if ann.arredata == 'NO'%}selected{%endif%}>No</option>
+                        </select>
+                    </div> 
+                </div>
+
+                <div class="row mb-3">
+                    <div class="mb-3 col-12">
+                        <label for="inputDescrizione" class="form-label">Aggingi una descrizione</label>
+                        <textarea class="form-control descr inp" id="inputDescrizione" name="descrizione"  required minlength=30 maxlength=500>{{ann.descrizione |e}}</textarea>
+                    </div>
+                </div>
+
+                <div class="input-group-text mb-1">
+                    <span class="input-group-text">Prezzo al mese:</span>
+                    <input type="number" class="form-control text-end inp" name="prezzo-unità" value={{pu}} id="inputPrezzo" required min="0">.
+                    <input type="number" class="form-control inp" name="prezzo-centesimi" value={{pd}} id="inputPrezzo" required min="0" max="99">
+                    <span class="input-group-text">€</span>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end">
+                <button type="reset" class="btn btn-secondary m-1">Reset</button>
+                <button type="submit" class="btn btn-viola m-1">Modifica annuncio</button>
+            </div>
+        </form>
+    </section>
+ 
+    <section class="col-lg-6">
+        <form action="{{url_for('modifica_foto_annuncio', id= ann.id)}}" method="POST" enctype="multipart/form-data" class="card p-2">
+            <h4 class="card-title">Modifica qui le foto del tuo annuncio</h4>
+            <div class="card-body">
+                <!--PRIMA DO LA POSSIBILITà DI SCEGLIERE TRA LE IMMAGINI GIà CARICATE QUALE VUOLE TENERE-->
+                <h6>Seleziona solo le immagini che vuoi mantenere:</h6>
+
+                <div class="mb-2 chechfotos">
+                    {%if ann.foto1!=''%}
+                    <input type="checkbox" class="btn-check" id="foto1Inp" autocomplete="off" name="foto1" value="{{ann.foto1}}">
+                    <label class="btn" for="foto1Inp"><img class="checkfoto" src={{url_for('static', filename=ann.foto1)}}></label>
+                    {%endif%}
+                    {%if ann.foto2!=''%}
+                    <input type="checkbox" class="btn-check" id="foto2Inp" autocomplete="off" name="foto2" value="{{ann.foto2}}">
+                    <label class="btn" for="foto2Inp" name="foto2"><img class="checkfoto" src={{url_for('static', filename=ann.foto2)}}></label>
+                    {%endif%}
+                    {%if ann.foto3!=''%}
+                    <input type="checkbox" class="btn-check" id="foto3Inp" autocomplete="off" name="foto3" value="{{ann.foto3}}">
+                    <label class="btn" for="foto3Inp" name="foto3"><img class="checkfoto" src={{url_for('static', filename=ann.foto3)}}></label>
+                    {%endif%}
+                    {%if ann.foto4!=''%}
+                    <input type="checkbox" class="btn-check" id="foto4Inp" autocomplete="off" name="foto4" value="{{ann.foto4}}">
+                    <label class="btn" for="foto4Inp" name="foto4"><img class="checkfoto" src={{url_for('static', filename=ann.foto4)}}></label>
+                    {%endif%}
+                    {%if ann.foto5!=''%}
+                    <input type="checkbox" class="btn-check" id="foto5Inp" autocomplete="off" name="foto5" value="{{ann.foto5}}">
+                    <label class="btn" for="foto5Inp" name="foto5"><img class="checkfoto" src={{url_for('static', filename=ann.foto5)}}></label>
+                    {%endif%}
+                </div>
+
+                <h6>Carica qui nuove immagini per il tuo annuncio:</h6>
+                <div><input class="form-control" type="file" id="formFile" name="newimg1" accept="image/*"></div>
+                <div><input class="form-control" type="file" id="formFile" name="newimg2" accept="image/*"></div>
+                <div><input class="form-control" type="file" id="formFile" name="newimg3" accept="image/*"></div>
+                <div><input class="form-control" type="file" id="formFile" name="newimg4" accept="image/*"></div>
+                <div><input class="form-control" type="file" id="formFile" name="newimg5" accept="image/*"></div>
+            
+            </div>
+            <div class="card-footer d-flex justify-content-end">
+                <button type="reset" class="btn btn-secondary m-1">Reset</button>
+                <button type="submit" class="btn btn-viola m-1">Modifica annuncio</button>
+            </div>
+        </form>
+    </section>
+
+</main>
+
+{%endblock%}

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}Profilo di {{current_user.nominativo}}{% endblock %}
+
+{%block content%}
+
+<main>
+
+    <h3 class="border-viola mb-3 p-2">Benvenuto/a nella tua pagina profilo {{utente.nominativo |e}}!</h3>
+    
+    <!--SOLO CHI E' REGISTRATO COME LOCATORE HA LA POSSIBILITA' DI CARICARE ANNUNCI E VEDERE I PROPRI ANNUNCI-->
+    {%if utente.ruolo == "LOCATORE"%}
+
+        <h3>Gestisci i tuoi annunci e le loro prenotazioni:</h3>
+        {%if annunci_visibili ==[] and annunci_nascosti==[]%}
+        <p>Non hai ancora caricato nessun annuncio!</p>
+        {%else%}
+
+        <section class="mb-2">
+            <h4>Annunci visibili:</h4>
+            {%if annunci_visibili == []%}
+            <p>Tutti i tuoi annunci sono nascosti!</p>
+            {%else%}
+                {%for elem in annunci_visibili%}
+                <article class="row border p-1 mb-1">
+                    <div class="col-md-4 mb-2">
+                        <h5 class="mb-2"><a href="{{url_for('single_annuncio', id=elem.id)}}">{{elem.titolo |e}}</a></h5>
+                        <p><strong>Indirizzo: </strong>{{elem.indirizzo}}</p>
+                        <div class="btn-group d-inline" role="group" aria-label="Basic outlined example">
+                            <a href="{{url_for('modifica_ann', id=elem.id)}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Modifica annuncio</a>
+                            {%if elem.disponibile=="NO"%}<a href="{{url_for('mostra_annuncio', id=elem.id)}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Rendi visibile</a>
+                            {%elif elem.disponibile=="SI"%}<a href="{{url_for('nascondi_annuncio', id=elem.id)}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Nascondi annuncio</a>
+                            {%endif%}
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <h5>Prenotazioni:</h5>
+                        <ul>
+                            {%if not prenotazioni_ricevute[elem.id]  %}
+                            <p>Non hai ancora ricevuto nessuna prenotazione per questo annuncio</p>
+                            {%else%}
+                            {%for pren in prenotazioni_ricevute[elem.id] %}
+                            <li>
+                                <p class="pe-3">Prenotazione da {{pren['nominativo'] |e}}, per il {{pren['data'] |e}} nella fascia oraria {{pren['fascia_oraria'] |e}}. Visita {{pren['mod_visita'].lower() |e}}.<br>
+                                {%if pren['stato']=="RICHIESTA" %}
+                                <div class="btn-group d-inline" role="group" aria-label="Basic outlined example">
+                                    <a href="{{url_for('accetta_prenotazione', id_prenotazione=pren['id'])}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Accetta la prenotazione</a>
+                                    <button type="button" class="btn btn-outline-viola btn-sm" data-bs-toggle="modal" data-bs-target="#rifiuto{{pren.id}}Modal">Rifiuta la prenotazione</button>
+                                </div></p>
+                                {%else%}
+                                <strong>Stato:</strong><span class="badge btn-viola p-1 ms-2">{{pren['stato'] |e}}</span>
+                                {%endif%}
+                                {%if pren['motivazione']%}<strong>Motivo del rifiuto: </strong>{{pren['motivazione'] |e}}</p>{%endif%}</p>
+                            </li>
+
+                            <!--MODALE PER ESPRIMERE IL RIFIUTO DELLA PRENOTAZIONE-->
+                            <div class="modal fade" id="rifiuto{{pren.id}}Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Rifiuto prenotazione</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ url_for('rifiuta_prenotazione', id_prenotazione=pren.id) }}" method='POST'>
+                                            <div class="modal-body">
+                                                <label for="inputMotivo" class="form-label">Perché stai rifiutando la prenotazione?</label>
+                                                <textarea type="text" class="form-control inp" id="inputMotivo" name="motivazione" required minlength=10 maxlength=100></textarea>              
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="reset" class="btn btn-secondary">Reset</button>
+                                                <button type="submit" class="btn btn-viola">Rifiuta prenotazione</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {%endfor%}
+                            {%endif%}
+                        </ul>
+                    </div>
+                </article>
+                {%endfor%}
+            {%endif%}
+        </section>
+
+        <section class="mb-3">
+            <h4>Annunci nascosti:</h4>
+            {%if annunci_nascosti == [] %}
+            <p>Tutti i tuoi annunci sono visibili!</p>
+            {%else%}
+                {%for elem in annunci_nascosti%}
+                <article class="row border p-1 mb-1">
+                    <div class="col-md-4 mb-2">
+                        <h5 class="mb-2"><a href="{{url_for('single_annuncio', id=elem.id)}}">{{elem.titolo |e}}</a></h5>
+                        <p><strong>Indirizzo: </strong>{{elem.indirizzo}}</p>
+                        <div class="btn-group d-inline" role="group" aria-label="Basic outlined example">
+                            <a href="{{url_for('modifica_ann', id=elem.id)}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Modifica annuncio</a>
+                            {%if elem.disponibile=="NO"%}<a href="{{url_for('mostra_annuncio', id=elem.id)}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Rendi visibile</a>
+                            {%elif elem.disponibile=="SI"%}<a href="{{url_for('nascondi_annuncio', id=elem.id)}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Nascondi annuncio</a>
+                            {%endif%}
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <h5>Prenotazioni:</h5>
+                        <ul>
+                            {%if not prenotazioni_ricevute[elem.id]  %}
+                            <p>Non hai ancora ricevuto nessuna prenotazione per questo annuncio</p>
+                            {%else%}
+                            {%for pren in prenotazioni_ricevute[elem.id] %}
+                            <li>
+                                <p class="pe-3">Prenotazione da {{pren['nominativo'] |e}}, per il {{pren['data'] |e}} nella fascia oraria {{pren['fascia_oraria'] |e}}. Visita {{pren['mod_visita'].lower() |e}}.<br>
+                                {%if pren['stato']=="RICHIESTA" %}
+                                <div class="btn-group d-inline" role="group" aria-label="Basic outlined example">
+                                    <a href="{{url_for('accetta_prenotazione', id_prenotazione=pren['id'])}}" class="btn btn-outline-viola btn-sm" tabindex="-1" role="button" aria-disabled="true">Accetta la prenotazione</a>
+                                    <button type="button" class="btn btn-outline-viola btn-sm" data-bs-toggle="modal" data-bs-target="#rifiuto{{pren.id}}Modal">Rifiuta la prenotazione</button>
+                                </div></p>
+                                {%else%}
+                                <strong>Stato:</strong><span class="badge btn-viola p-1 ms-2">{{pren['stato'] |e}}</span>
+                                {%endif%}
+                                {%if pren['motivazione']%}<strong>Motivo del rifiuto: </strong>{{pren['motivazione'] |e}}</p>{%endif%}</p>
+                            </li>
+
+                             <!--MODALE PER ESPRIMERE IL RIFIUTO DELLA PRENOTAZIONE-->
+                            <div class="modal fade" id="rifiuto{{pren.id}}Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Rifiuto prenotazione</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ url_for('rifiuta_prenotazione', id_prenotazione=pren.id) }}"  method='POST'>
+                                            <div class="modal-body">
+                                                <label for="inputMotivo" class="form-label">Perché stai rifiutando la prenotazione?</label>
+                                                <textarea type="text" class="form-control inp" id="inputMotivo" name="motivazione" required minlength=10 maxlength=100></textarea>              
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="reset" class="btn btn-secondary">Reset</button>
+                                                <button type="submit" class="btn btn-viola">Rifiuta prenotazione</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {%endfor%}
+                            {%endif%}
+                        </ul>
+                    </div>
+                </article>
+                {%endfor%}
+        </section>
+
+        {%endif%}
+        {%endif%}
+    {%endif%}
+
+    <section>
+        <h3>Le tue prenotazioni:</h3>
+        {%if not prenotazioni_fatte%}
+        <p>Non hai ancora fatto nessuna prenotazione...</p>
+        {%else%}
+        <ul class="ms-4">
+            {%for prenf in prenotazioni_fatte%}
+            <li class="mb-1">
+                <p class="pe-4">Prenotazione per <strong><a href={{url_for('single_annuncio', id=prenf.id_annuncio)}}>{{prenf['titolo'] |e}}</a></strong>, {{prenf.indirizzo |e}}, in data {{prenf['data'] |e}} nella fascia oraria {{prenf['fascia_oraria'] |e}}. Visita {{prenf['mod_visita'].lower() |e}}.</p>
+                <div class="d-flex flex-row">
+                    {%if prenf['stato']=="RIFIUTATA" %}
+                    <p><strong>Stato:</strong><h6><span class="badge btn-viola p-1 ms-2">{{prenf['stato'] |e}}</span></h6></p>
+                    <p class="ms-3"><strong>Motivo del rifiuto: </strong>{{prenf['motivazione'] |e}}</p>
+                    {%else%}
+                    <p><strong>Stato:</strong><h6><span class="badge btn-viola p-1 ms-2">{{prenf['stato'] |e}}</span></h6></p>
+                    {%endif%}
+                </div>
+            </li>
+            {%endfor%}
+        </ul>
+        {%endif%}
+
+    </section>
+
+    {% if current_user.ruolo == "LOCATORE" %}
+    <button type="button" class="newAnn-btn" data-bs-toggle="modal" data-bs-target="#createModal">
+      +
+    </button>
+
+    <!--FORM PER CREARE UN NUOVO ANNUNCIO-->
+    <div class="modal fade" id="createModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Aggiungi un nuovo annuncio</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/annunci/new" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="mb-3 col-md-6">
+                                <label for="inputTitolo" class="form-label">Titolo</label>
+                                <input type="text" class="form-control inp" id="inputTitolo" name="titolo" required minlength=3 maxlength=30>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="inputIndirizzo" class="form-label">Indirizzo</label>
+                                <input type="text" class="form-control inp" id="inputIndirizzo" name="indirizzo" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3 col-md-6">
+                                <label for="inputTipo" class="form-label">Tipo di alloggio:</label>
+                                <select id="inputTipo" class="form-select" name="tipo" required>
+                                    <option value="casa indipendente">Casa indipendente</option>
+                                    <option value="appartamento">Appartamento</option>
+                                    <option value="loft">Loft</option>
+                                    <option value="villa">Villa</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <label for="inputNumLocali" class="form-label">Numero di locali:</label>
+                                <select id="inputNumLocali" class="form-select" name="num_locali" required>
+                                    <option value=1>Uno</option>
+                                    <option value=2>Due</option>
+                                    <option value=3>Tre</option>
+                                    <option value=4>Quattro</option>
+                                    <option value=5>Cinque o più</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <label for="inputArredata" class="form-label">E' arredata?</label>
+                                <select id="inputArredata" class="form-select" name="arredata" required>
+                                    <option value="SI">Si</option>
+                                    <option value="NO">No</option>
+                                </select>
+                            </div> 
+                            <div class="col-lg-3 col-md-6">
+                                <label for="inputDisponibile" class="form-label">L'annuncio sarà visibile a tutti?</label>
+                                <select id="inputDisponibile" class="form-select" name="disponibile" required>
+                                    <option value="SI">Si</option>
+                                    <option value="NO">No</option>
+                                </select>
+                            </div> 
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="mb-3 col-12">
+                                <label for="inputDescrizione" class="form-label">Aggingi una descrizione</label>
+                                <textarea class="form-control inp" id="inputDescrizione" name="descrizione"  placeholder="Inserisci una breve descrizione per il tuo annuncio" required minlength=30 maxlength=500></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 d-flex justify-content-evenly"> 
+                            <h6>Carica qui le tue immagini</h6>
+                            <div class="col-md-4 mb-2"><input class="form-control" type="file" id="formFile" name="foto1" accept="image/*" required></div>
+                            <div class="col-md-4 mb-2"><input class="form-control" type="file" id="formFile" name="foto2" accept="image/*"></div>
+                            <div class="col-md-4 mb-2"><input class="form-control" type="file" id="formFile" name="foto3" accept="image/*"></div>
+                            <div class="col-md-4 mb-2"><input class="form-control" type="file" id="formFile" name="foto4" accept="image/*"></div>
+                            <div class="col-md-4 mb-2"><input class="form-control" type="file" id="formFile" name="foto5" accept="image/*"></div>
+                        </div>
+
+                        <div class="input-group-text mb-3">
+                            <span class="input-group-text">Prezzo al mese:</span>
+                            <input type="number" class="form-control text-end inp" name="prezzo-unità" placeholder="0000" id="inputPrezzo" required min="0">.
+                            <input type="number" class="form-control inp" name="prezzo-centesimi"  placeholder='00' id="inputPrezzo" required min="0" max="99">
+                            <span class="input-group-text">€</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                        <button type="submit" class="btn btn-viola">Crea annuncio</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {%endif%}
+
+</main>
+{%endblock%}

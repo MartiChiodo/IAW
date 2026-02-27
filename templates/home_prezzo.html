@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<aside id="myaside" class="col-lg-2 col-md-12">
+    <h3>Filtra gli annunci per:</h3>
+    <section class="list-group">
+        <a href="{{url_for('home_prezzo')}}" class="list-group-item list-group-item-action asideactive" aria-current="true">Prezzo decrescente</a>
+        <a href="{{url_for('home_numlocali')}}" class="list-group-item list-group-item-action">Numero di locali crescente</a>
+    </section>
+</aside>
+
+<main class="col-lg-10 col-md-12">
+    {%for elem in annunci%}
+        <section class="row p-1 my-1 me-1 border">
+            <div class="col-md-6">
+                <!-- carousel per mostrare le foto della casa -->
+                <div id="carouselFotoAnnuncio_{{elem.id  | e}}" class="carousel slide">     
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        {%if elem.foto2!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide-to="1" aria-label="Slide 2"></button>{%endif%}
+                        {%if elem.foto3!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide-to="2" aria-label="Slide 3"></button>{%endif%}
+                        {%if elem.foto4!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide-to="3" aria-label="Slide 4"></button>{%endif%}
+                        {%if elem.foto5!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide-to="4" aria-label="Slide 5"></button>{%endif%}
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active"><img src="{{url_for('static', filename= elem.foto1 )}}" class="d-block w-100" alt="Questa è la prma foto dell'annuncio per {{elem.titolo}}"></div>
+                        {%if elem.foto2!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= elem.foto2 )}}" class="d-block w-100" alt="Questa è la seconda foto dell'annuncio per {{elem.titolo}}"></div>{%endif%}
+                        {%if elem.foto3!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= elem.foto3 )}}" class="d-block w-100" alt="Questa è la terza foto dell'annuncio per {{elem.titolo}}"></div>{%endif%}
+                        {%if elem.foto4!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= elem.foto4 )}}" class="d-block w-100" alt="Questa è la quarta foto dell'annuncio per {{elem.titolo}}"></div>{%endif%}
+                        {%if elem.foto5!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= elem.foto5 )}}" class="d-block w-100" alt="Questa è la quinta foto dell'annuncio per {{elem.titolo}}"></div>{%endif%}
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselFotoAnnuncio_{{elem.id  | e}}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+            <article class="col-md-6 align-self-md-center p-1">
+                <a href="{{url_for('single_annuncio', id=elem.id)}}"><h2>{{elem.titolo |e}}</h2></a>
+                <h4>{{elem.indirizzo |e}}</h4>
+                <h5>Prezzo: <span class="badge prezzobadge"><strong>{{elem.prezzo |e}}</strong> €/mese</span></h5>
+                <p><strong>Tipo di appartamento:</strong> {{elem.tipo |e}} <br><strong>Numero di locali:</strong> {%if elem.num_locali < 5%}{{elem.num_locali |e}}{%elif elem.num_locali == 5%}5 o più.{%endif%}</p>
+            </article>
+        </section>
+    {%endfor%}
+
+</main>
+
+{%endblock%}

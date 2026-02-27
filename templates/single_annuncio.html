@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Annuncio by {{annuncio.nom_locatore}}{% endblock %}
+
+{% block content %}
+<main>
+    <section class="row m-1 p-3 border mb-3">
+        <div class="col-md-6 p-1">
+            <!-- carousel per mostrare le foto della casa -->
+            <div id="carouselFotoAnnuncio" class="carousel slide">     
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    {%if annuncio.foto2!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide-to="1" aria-label="Slide 2"></button>{%endif%}
+                    {%if annuncio.foto3!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide-to="2" aria-label="Slide 3"></button>{%endif%}
+                    {%if annuncio.foto4!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide-to="3" aria-label="Slide 4"></button>{%endif%}
+                    {%if annuncio.foto5!=""%}<button type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide-to="4" aria-label="Slide 5"></button>{%endif%}
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active"><img src="{{url_for('static', filename= annuncio.foto1 )}}" class="d-block w-100" alt="Questa è la prima foto dell'annuncio"></div>
+                    {%if annuncio.foto2!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= annuncio.foto2 )}}" class="d-block w-100" alt="Questa è la seconda foto dell'annuncio"></div>{%endif%}
+                    {%if annuncio.foto3!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= annuncio.foto3 )}}" class="d-block w-100" alt="Questa è la terza foto dell'annuncio"></div>{%endif%}
+                    {%if annuncio.foto4!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= annuncio.foto4 )}}" class="d-block w-100" alt="Questa è la quarta foto dell'annuncio"></div>{%endif%}
+                    {%if annuncio.foto5!=""%}<div class="carousel-item"><img src="{{url_for('static', filename= annuncio.foto5 )}}" class="d-block w-100" alt="Questa è la quinta foto dell'annuncio"></div>{%endif%}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselFotoAnnuncio" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-6 d-flex">
+        <section class="align-self-center">
+            <h2><strong>{{annuncio.titolo |e}}</strong></h2>
+            <h5>Annuncio di: <strong>{{annuncio.nominativo |e}}</strong></h5>
+            <h5>Indirizzo: <strong>{{annuncio.indirizzo |e}}</strong></h5>
+            <div class="d-lg-flex justify-content-around p-1">
+                <h5>Tipo di locale: <strong>{{annuncio.tipo |e}}</strong></h5>
+                <h5>Numero di locali: <strong>{{annuncio.num_locali |e}}</strong></h5>
+            </div>
+            <h5>La casa {%if annuncio.arredata == 'NO'%}non{%endif%} è arredata.</h5>
+            <p>{{annuncio.descrizione |e}}</p>
+            <div class="d-flex justify-content-end"><h4>Prezzo: <span class="badge prezzobadge"><strong>{{annuncio.prezzo |e}}</strong> €/mese</span></h4></div>
+        </section>
+        </div>
+    </section>
+
+    <!--SEZIONE DEDICATA ALLA PRENOTAZIONE DELLA VISITA-->
+    <section class="row my-2">
+        <h3>Vuoi prenotare una visita dell'appartamento?</h3>
+        {%if current_user.is_authenticated %}
+        <form action ="{{ url_for('nuova_prenotazione', id_annuncio=annuncio['id']) }}" method="POST">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="modalitàInput" class="form-label">Come vuoi visitare la casa?</label>
+                    <select class="form-select" aria-label="Default select example" id="modalitàInput" name="mod_visita" required>
+                        <option value="DI PERSONA">Di persona</option>
+                        <option value="DA REMOTO">Da remoto</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="orarioInput" class="form-label">Quando?</label>
+                    <select class="form-select" aria-label="Default select example" id="orarioInput" name="data_ora" required>
+                        {%for slot in possibili_date%}
+                            <option value={{slot[0]}}+{{slot[1]}} {%if not slot[2]%} disabled{%endif%}>Giorno: {{slot[0]}} - Slot orario: {{slot[1]}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+            </div>
+            <div class="col-11 d-flex justify-content-end py-2">
+                <button type="submit" class="btn btn-viola">Prenota</button>
+            </div>
+        </form>
+        {%else%}
+        <p>Prima di fare una prenotazione, devi loggarti.</p>
+        {%endif%}
+    </section>
+</main>
+
+{%endblock%}

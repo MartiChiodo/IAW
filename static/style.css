@@ -1,0 +1,90 @@
+.mynavbar {
+    background-color: #6f42c1;
+    padding: 2rem;
+}
+
+#myheader h1 {
+    color: white;
+    font-weight: bold ;
+}
+
+#myheader a {
+    color: white;
+}
+
+.asideactive {
+    background-color:#6e42c171;
+    
+}
+
+.prezzobadge {
+    background-color:#6e42c199;  
+
+}
+
+.btn-viola {
+    background-color:#6e42c1c5;  
+    color: white; 
+}
+
+
+.card-newAnnuncio {
+    background-color:#6e42c142; 
+}
+
+.border-viola { border-style: solid;
+    border-color:#6e42c1c5;
+    border-width: 3;
+    }
+
+a {color: #6f42c1
+}
+
+.btn-outline-viola {
+    outline-style: solid;
+    outline-color: #6f42c1;
+}
+
+.btn-outline-viola:hover {
+    background-color: #6e42c1c5;
+    color: white;
+}
+
+.newAnn-btn {
+    background-color: #6f42c1;
+    border: none;
+    border-radius: 50%;
+    bottom: 30px;
+    color: white;
+    font-size:xx-large;
+    height: 60px;
+    position: fixed;
+    right: 30px;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    width: 60px;
+}
+
+.checkfotos  {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.checkfoto {
+    max-height: 5em;
+    margin:0em;
+}
+
+footer {
+    background-color: #6e42c17c ;
+}
+
+.inp:valid {
+    border-color: green;
+}
+
+.inp:invalid {
+    border-color: red;
+}

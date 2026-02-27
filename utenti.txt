@@ -1,0 +1,15 @@
+UTENTI REGISTRATI:
+- martina@gmail.com psw:martina LOCATORE
+- francesco@gmail.com psw:francesco CLIENTE
+- chiara@gmail.com psw:chiara LOCATORE
+- gaia@gmail.com psw:gaia CLIENTE
+- gabriele@gmail.com psw: gabriele LOCATORE
+
+
+EVENTUALI DIPENDENZE
+pip install Werkzeug
+pip install Pillow
+
+
+INDIRIZZO DEPLOY
+https://martina02.pythonanywhere.com/

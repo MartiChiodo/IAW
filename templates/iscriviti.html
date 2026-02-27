@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Iscriviti{% endblock %}
+
+{% block content %}
+<main>
+    <a href="/">Torna indietro</a>
+    <div class="col-md-4 offset-md-4 bg-light p-4 border rounded">
+        <form action="/iscriviti" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="emailInput" class="form-label">Email</label>
+                <input type="email" class="form-control inp" name="email" id="emailInput" required>
+            </div>
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input type="password" class="form-control inp" name="password" id="passwordInput" required>
+                <div id="passwordHelp" class="form-text">Non condivideremo mai la tua password con nessun altro.</div>
+            </div>
+            <div class="mb-3">
+                <label for="nominativoInput" class="form-label">Nome e cognome</label>
+                <input type="text" class="form-control inp" name="nominativo" id="nominativoInput" required>
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="ruoloInput">Ruolo</label>
+                <select class="form-select" id="ruoloInput" name="ruolo" required>
+                  <option selected>Scegli:</option>
+                  <option value="CLIENTE">Cliente</option>
+                  <option value="LOCATORE">Locatore</option>
+                </select>
+              </div>
+            <button type="submit" class="btn btn-viola">Registrati</button>
+        </form>
+    </div>
+</main>
+{% endblock %}
